@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Upload Book - BookNest</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+
+  <style>
+    body {
+      background: linear-gradient(135deg, #264d7f 0%, #1e2e5f 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      font-family: 'Poppins', sans-serif;
+    }
+    .upload-card {
+      background-color: rgba(40, 70, 120, 0.9);
+      padding: 30px;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 420px;
+      color: #f0f0f0;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    }
+    .form-control, .form-select {
+      background-color: #5772a5;
+      border: none;
+      color: #e3e9ff;
+    }
+    .form-control::placeholder {
+      color: #b1bcd5;
+    }
+    .form-control:focus, .form-select:focus {
+      background-color: #455c91;
+      color: #fff;
+      box-shadow: none;
+      border: none;
+    }
+    label {
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="upload-card">
+    <h3 class="mb-4 text-center fw-bold">Upload New Book</h3>
+
+    <!-- Show alert if error -->
+    {% if error %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+      {{ error }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endif %}
+
+    <form method="POST" enctype="multipart/form-data" novalidate>
+      {{ form.csrf_token }}
+
+      <div class="mb-3">
+        <label for="title" class="form-label">Book Title</label>
+        {{ form.title(class="form-control", placeholder="Enter book title") }}
+      </div>
+
+      <div class="mb-3">
+        <label for="author" class="form-label">Author Name</label>
+        {{ form.author(class="form-control", placeholder="Enter author's name") }}
+      </div>
+
+      <div class="mb-3">
+        <label for="genre" class="form-label">Genre</label>
+        {{ form.genre(class="form-select") }}
+      </div>
+
+      <div class="mb-3">
+        <label for="description" class="form-label">Book Description</label>
+        {{ form.description(class="form-control", placeholder="Write a short description...") }}
+      </div>
+
+      <div class="mb-3">
+        <label for="cover" class="form-label">Cover Image</label>
+        {{ form.cover(class="form-control") }}
+      </div>
+
+      <div class="mb-3">
+        <label for="pdf_file" class="form-label">PDF File</label>
+        {{ form.pdf_file(class="form-control") }}
+      </div>
+
+      <button type="submit" class="btn btn-success w-100">Upload Book</button>
+    </form>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

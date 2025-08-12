@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BookNest - Home</title>
+
+  <!-- Bootstrap & Fonts -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <!-- Custom Styles -->
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),
+                  url('https://images.unsplash.com/photo-1512820790803-83ca734da794') center/cover no-repeat fixed;
+      color: #fff;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Navbar */
+    .navbar {
+      background-color: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(6px);
+    }
+
+    .navbar-brand {
+      font-weight: 600;
+      font-size: 1.3rem;
+    }
+
+    /* Book Card */
+    .book-card {
+      background-color: rgba(255, 255, 255, 0.95);
+      color: #000;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+      transition: all 0.3s ease;
+    }
+
+    .book-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+    }
+
+    .book-card img {
+      max-height: 220px;
+      object-fit: cover;
+      width: 100%;
+      border-radius: 6px;
+      margin-bottom: 10px;
+      transition: transform 0.3s ease;
+    }
+
+    .book-card img:hover {
+      transform: scale(1.03);
+    }
+
+    /* Buttons */
+    .btn-primary {
+      background-color: #7c56c8;
+      border: none;
+    }
+
+    .btn-primary:hover {
+      background-color: #6a47b4;
+    }
+
+    /* Toasts */
+    .toast-container {
+      z-index: 1100;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .book-card {
+        margin-bottom: 2rem;
+      }
+    }
+    .modal {
+  display: block; /* Always visible if popup_message exists */
+  position: fixed;
+  z-index: 1000;
+  left: 0; top: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.4);
+}
+.modal-content {
+  background: #fff;
+  margin: 15% auto;
+  padding: 20px;
+  border-radius: 8px;
+  width: 300px;
+  text-align: center;
+}
+.close {
+  float: right;
+  font-size: 20px;
+  cursor: pointer;
+}
+</style>
+    
+  </style>
+</head>
+<body>
+  
+
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">📚 BookNest</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+      <ul class="navbar-nav align-items-center">
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('main.all_books') }}">Books</a>
+        </li>
+        {% if current_user.is_authenticated and current_user.is_admin %}
+    <a href="{{ url_for('main.upload') }}" class="btn btn-primary">Upload Book</a>
+{% endif %}
+
+          
+        
+        
+
+        {% if current_user.is_authenticated %}
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
+            <i class="bi bi-person-circle me-1" style="font-size: 1.6rem; opacity: 0.7;"></i>
+            {{ current_user.username }}
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><span class="dropdown-item text-muted">📧 {{ current_user.email }}</span></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item text-danger" href="{{ url_for('main.logout') }}">Logout</a></li>
+          </ul>
+        </li>
+        {% else %}
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('main.login') }}">
+            <i class="bi bi-person-circle" style="font-size: 1.8rem; opacity: 0.7;"></i>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('main.register') }}">Register</a>
+        </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Book Cards Grid 
+<div class="container">
+  <div class="row g-4">
+    {% for book in books %}
+    <div class="col-sm-6 col-md-4 col-lg-3">
+      <div class="book-card">
+        <h5 class="fw-bold">{{ book.title }}</h5>
+        <p class="text-muted mb-1"><em>{{ book.author }}</em></p>
+        {% if book.cover_filename %}
+          <img src="{{ url_for('static', filename='uploads/' ~ book.cover_filename) }}" alt="{{ book.title }}">
+        {% endif %}
+        <a href="{{ url_for('main.book_view', book_id=book.id) }}" class="btn btn-primary w-100 mt-2">Start Reading</a>
+        <form method="POST" action="{{ url_for('main.delete_book', book_id=book.id) }}" onsubmit="return confirm('Are you sure you want to delete this book?');">
+          <button type="submit" class="btn btn-danger btn-sm w-100 mt-2">Delete</button>
+        </form>
+      </div>
+    </div>
+    {% endfor %}-->
+  </div>
+</div>
+
+<!-- Toast Notifications -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+      {% for category, message in messages %}
+        <div class="toast align-items-center text-bg-{{ 'success' if category == 'success' else 'danger' }} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+          <div class="d-flex">
+            <div class="toast-body">
+              {{ message }}
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+</body>
+</html>
